@@ -27,7 +27,7 @@ func TestFunctions(t *testing.T) {
 	}
 
 	// change iptables rules
-	args := []string{"-P", "INPUT", "-p", "tcp", "--dport", "8080", "DROP"}
+	args := []string{"-P", "INPUT", "-p", "tcp", "--dport", "8080", "-j", "DROP"}
 
 	cmd := exec.Command("iptables", args...)
 
