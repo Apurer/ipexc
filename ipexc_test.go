@@ -1,11 +1,11 @@
 package ipexc
 
 import (
-	"testing"
 	"fmt"
 	"log"
+	"net/http"
 	"os/exec"
-    "net/http"
+	"testing"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -25,10 +25,10 @@ func TestFunctions(t *testing.T) {
 	if err != nil {
 		t.Errorf("error during making http request to server with message: %q", err)
 	}
-	
+
 	// change iptables rules
 	args := []string{"-P", "INPUT", "-p", "tcp", "--dport", "8080", "DROP"}
-	
+
 	cmd := exec.Command("iptables", args...)
 
 	err = cmd.Run()

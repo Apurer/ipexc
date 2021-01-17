@@ -1,10 +1,10 @@
 package ipexc
 
 import (
-	"net"
-	"strconv"
-	"os/exec"
 	"encoding/binary"
+	"net"
+	"os/exec"
+	"strconv"
 )
 
 func ipToint(ip net.IP) uint32 {
@@ -24,7 +24,7 @@ func intToip(nn uint32) net.IP {
 func Insert(port uint64, ip uint32) error {
 
 	args := []string{"-I", "INPUT", "-p", "tcp", "-s", intToip(ip).String(), "--dport", strconv.FormatUint(port, 10), "-m", "state", "--state", "NEW", "-j", "ACCEPT"}
-	
+
 	cmd := exec.Command("iptables", args...)
 
 	err := cmd.Run()
