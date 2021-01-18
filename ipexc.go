@@ -23,7 +23,7 @@ func intToip(nn uint32) net.IP {
 // Insert function for inserting new records into tables INPUT and OUTPUT
 func Insert(port uint64, ip uint32) error {
 
-	args := []string{"-I", "INPUT", "-p", "tcp", "-s", intToip(ip).String(), "--dport", strconv.FormatUint(port, 10), "-m", "state", "--state", "NEW", "-j", "ACCEPT"}
+	args := []string{"-I", "INPUT", "-p", "tcp", "-s", intToip(ip).String(), "--dport", strconv.FormatUint(port, 10), "-m", "state", "--state", "NEW,ESTABLISHED", "-j", "ACCEPT"}
 
 	cmd := exec.Command("iptables", args...)
 
@@ -48,7 +48,7 @@ func Insert(port uint64, ip uint32) error {
 // Delete function for deleting new records from tables INPUT and OUTPUT
 func Delete(port uint64, ip uint32) error {
 
-	args := []string{"-D", "INPUT", "-p", "tcp", "-s", intToip(ip).String(), "--dport", strconv.FormatUint(port, 10), "-m", "state", "--state", "NEW", "-j", "ACCEPT"}
+	args := []string{"-D", "INPUT", "-p", "tcp", "-s", intToip(ip).String(), "--dport", strconv.FormatUint(port, 10), "-m", "state", "--state", "NEW,ESTABLISHED", "-j", "ACCEPT"}
 
 	cmd := exec.Command("iptables", args...)
 

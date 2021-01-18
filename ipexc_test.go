@@ -3,6 +3,8 @@ package ipexc
 import (
 	"fmt"
 	"log"
+	"net"
+	"time"
 	"net/http"
 	"os/exec"
 	"testing"
@@ -17,29 +19,38 @@ func server() {
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
+var timeout = time.Duration(2 * time.Second)
+
+func dialTimeout(network, addr string) (net.Conn, error) {
+    return net.DialTimeout(network, addr, timeout)
+}
+
 func TestFunctions(t *testing.T) {
+
+	transport := http.Transport{
+        Dial: dialTimeout,
+    }
+
+    client := http.Client{
+        Transport: &transport,
+    }
+
 	// start http server
 	go server()
-	// make request to http server
-	_, err := http.Get("http://localhost:8080")
+	//make request to http server
+	_, err := client.Get("http://localhost:8080")
 	if err != nil {
 		t.Errorf("error during making http request to server with message: %q", err)
 	}
 
 	// change iptables rules
-	args := []string{"-P", "INPUT", "-p", "tcp", "--dport", "8080", "-j", "DROP"}
+	 args := []string{"-I", "INPUT", "-p", "tcp", "--dport", "8080", "-j", "DROP"}
 
-	cmd := exec.Command("iptables", args...)
+	  cmd := exec.Command("iptables", args...)
 
 	err = cmd.Run()
 	if err != nil {
 		t.Errorf("error during preparing iptables rules for test: %q", err)
-	}
-
-	// make request to http server
-	_, err = http.Get("http://localhost:8080")
-	if err == nil {
-		t.Errorf("iptables rules did not work: %v", args)
 	}
 
 	// run Insert function
@@ -50,7 +61,7 @@ func TestFunctions(t *testing.T) {
 		t.Errorf("error during running Insert function : %q", err)
 	}
 	// make request to http server
-	_, err = http.Get("http://localhost:8080")
+	_, err = client.Get("http://localhost:8080")
 	if err != nil {
 		t.Errorf("error during making http request to server after running Insert function with message: %q", err)
 	}
@@ -61,13 +72,7 @@ func TestFunctions(t *testing.T) {
 		t.Errorf("error during running Delete function : %q", err)
 	}
 
-	// make request to http server
-	_, err = http.Get("http://localhost:8080")
-	if err == nil {
-		t.Error("running function Delete did not work")
-	}
-
-	// clean up of ip tables rules
+	// clean up of iptables rules
 	args[0] = "-D"
 
 	cmd = exec.Command("iptables", args...)
