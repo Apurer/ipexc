@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"time"
 	"net/http"
 	"os/exec"
 	"testing"
+	"time"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -22,18 +22,18 @@ func server() {
 var timeout = time.Duration(2 * time.Second)
 
 func dialTimeout(network, addr string) (net.Conn, error) {
-    return net.DialTimeout(network, addr, timeout)
+	return net.DialTimeout(network, addr, timeout)
 }
 
 func TestFunctions(t *testing.T) {
 
 	transport := http.Transport{
-        Dial: dialTimeout,
-    }
+		Dial: dialTimeout,
+	}
 
-    client := http.Client{
-        Transport: &transport,
-    }
+	client := http.Client{
+		Transport: &transport,
+	}
 
 	// start http server
 	go server()
@@ -44,9 +44,9 @@ func TestFunctions(t *testing.T) {
 	}
 
 	// change iptables rules
-	 args := []string{"-I", "INPUT", "-p", "tcp", "--dport", "8080", "-j", "DROP"}
+	args := []string{"-I", "INPUT", "-p", "tcp", "--dport", "8080", "-j", "DROP"}
 
-	  cmd := exec.Command("iptables", args...)
+	cmd := exec.Command("iptables", args...)
 
 	err = cmd.Run()
 	if err != nil {
