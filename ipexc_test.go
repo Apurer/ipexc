@@ -54,8 +54,8 @@ func TestFunctions(t *testing.T) {
 	}
 
 	// run Insert function
-	var port uint64 = 8080
-	var ip uint32 = 2130706433
+	port := "8080"
+	ip := "127.0.0.1"
 	err = Insert(port, ip)
 	if err != nil {
 		t.Errorf("error during running Insert function : %q", err)
